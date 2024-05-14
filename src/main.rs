@@ -46,6 +46,7 @@ fn run_app<B: Backend>(
 
 
     loop {
+        let _ = app.filesystem.update_directories();
         terminal.draw(|f| ui(f, app))?;
 
         if let Event::Key(key) = event::read()? {

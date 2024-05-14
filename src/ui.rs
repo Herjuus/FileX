@@ -1,3 +1,5 @@
+use std::fs::FileType;
+
 use ratatui::{layout::{Alignment, Constraint, Direction, Layout, Margin, Rect}, style::{Color, Style, Stylize}, text::Text, widgets::{Block, Borders, Paragraph}, Frame};
 
 use crate::app::App;
@@ -50,17 +52,37 @@ pub fn ui(f: &mut Frame, app: &App) {
     f.render_widget(header_table, tableChunks[0]);
 
     let mut table_state = TableState::default();
-    table_state.select(Some(app.selected_item_index));
+    table_state.select(Some(app.filesystem.selected_index));
+
+    let mut rows = Vec::new();
+
+    for dir in &app.filesystem.dirs {
+        let name = dir.name.to_string_lossy().to_string();
+        let file_type = if FileType::is_dir(&dir.file_type) {
+            "Directory".to_string()
+        } else if FileType::is_file(&dir.file_type) {
+            "File".to_string()
+        } else if FileType::is_symlink(&dir.file_type) {
+            "Symlink".to_string()
+        } else {
+            "Unknown".to_string()
+        };
+
+        let size = format!("{}kb", dir.size / 1024); // Convert size to kilobytes
     
-    let rows = [
-        Row::new(vec!["Hosts", "", "2kb"]),
-        Row::new(vec!["fr.txt", "txt", "1MB"]),
-    ];
+        let row = Row::new(vec![name, file_type, size]);
+        rows.push(row);
+    }
+    
+
+    // let rows = [
+    //     Row::new(vec!["Hosts", "", "2kb"]),
+    //     Row::new(vec!["fr.txt", "txt", "1MB"]),
+    // ];
     let table = Table::new(rows, widths)
         .highlight_style(Style::new().add_modifier(Modifier::REVERSED));
 
     f.render_stateful_widget(table, tableChunks[1], &mut table_state);
-
 
 }
 

@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::{ffi::OsString, fs::{self, FileType}, io, os::unix::fs::MetadataExt, path::PathBuf};
 
 pub enum CurrentScreen {
     Main,
@@ -8,7 +8,6 @@ pub enum CurrentScreen {
 pub struct App {
     pub current_screen: CurrentScreen,
     pub filesystem: Filesystem,
-    pub selected_item_index: usize,
 }
 
 impl App {
@@ -16,34 +15,65 @@ impl App {
         App {
             current_screen: CurrentScreen::Main,
             filesystem: Filesystem::new(),
-            selected_item_index: 0,
         }
     }
 
     pub fn selection_up(&mut self) {
-        if self.selected_item_index >= 1 {
-            self.selected_item_index = self.selected_item_index - 1;
+        if self.filesystem.selected_index >= 1 {
+            self.filesystem.selected_index = self.filesystem.selected_index - 1;
         }
     }
 
     pub fn selection_down(&mut self) {
-        self.selected_item_index = self.selected_item_index + 1;
+        self.filesystem.selected_index = self.filesystem.selected_index + 1;
     }
 }
 
 pub struct Filesystem {
-    pub current_path: PathBuf
+    pub current_path: PathBuf,
+    pub dirs: Vec<Directory>,
+    pub selected_index: usize,
 }
 
 impl Filesystem {
     pub fn new() -> Filesystem {
         Filesystem {
-            current_path: std::env::current_dir().unwrap()
+            current_path: std::env::current_dir().unwrap(),
+            dirs: Vec::new(),
+            selected_index: 0,
         }
     }
 
     pub fn go_back(&mut self) {
+        self.selected_index = 0;
         self.current_path.pop();
-        let _new_path = std::env::set_current_dir(&self.current_path);
+        let _ = std::env::set_current_dir(&self.current_path);
     }
+
+    pub fn update_directories(&mut self) -> io::Result<()> {
+        self.dirs.clear();
+
+        for entry in fs::read_dir(&self.current_path)? {
+            let entry = entry?;
+            let name = entry.file_name();
+            let file_type = entry.file_type()?;
+            let size = entry.metadata()?.size();
+
+            let dir: Directory = Directory {
+                name,
+                file_type,
+                size
+            };
+
+            self.dirs.push(dir);
+        }
+
+        Ok(())
+    }
+}
+
+pub struct Directory {
+    pub name: OsString,
+    pub file_type: FileType,
+    pub size: u64,
 }
