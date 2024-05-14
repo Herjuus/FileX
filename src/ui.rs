@@ -68,17 +68,12 @@ pub fn ui(f: &mut Frame, app: &App) {
             "Unknown".to_string()
         };
 
-        let size = format!("{}kb", dir.size / 1024); // Convert size to kilobytes
+        let size = format!("{}kb", dir.size / 1024);
     
         let row = Row::new(vec![name, file_type, size]);
         rows.push(row);
     }
     
-
-    // let rows = [
-    //     Row::new(vec!["Hosts", "", "2kb"]),
-    //     Row::new(vec!["fr.txt", "txt", "1MB"]),
-    // ];
     let table = Table::new(rows, widths)
         .highlight_style(Style::new().add_modifier(Modifier::REVERSED));
 
