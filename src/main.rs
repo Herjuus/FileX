@@ -59,13 +59,22 @@ fn run_app<B: Backend>(
                         break;
                     }
                     KeyCode::Up => {
-                        app.selection_up();
+                        app.move_up(1);
                     }
                     KeyCode::Down => {
-                        app.selection_down();
+                        app.move_down(1);
+                    }
+                    KeyCode::Left => {
+                        app.move_up(5);
+                    }
+                    KeyCode::Right => {
+                        app.move_down(5);
                     }
                     KeyCode::Backspace => {
                         app.filesystem.go_back();
+                    }
+                    KeyCode::Enter => {
+                        app.filesystem.open_go_forward();
                     }
                     _ => {}
                 }

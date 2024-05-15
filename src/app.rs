@@ -18,14 +18,23 @@ impl App {
         }
     }
 
-    pub fn selection_up(&mut self) {
-        if self.filesystem.selected_index >= 1 {
-            self.filesystem.selected_index = self.filesystem.selected_index - 1;
+    pub fn move_up(&mut self, steps: i64) {
+        let mut temp = self.filesystem.selected_index as i64 - steps;
+        if temp < 0 {
+            temp = 0;
         }
+        self.filesystem.selected_index = temp as usize;
     }
 
-    pub fn selection_down(&mut self) {
-        self.filesystem.selected_index = self.filesystem.selected_index + 1;
+    pub fn move_down(&mut self, steps: i64) {
+        let max = self.filesystem.dirs.len() as i64;
+
+        let mut temp = self.filesystem.selected_index as i64 + steps;
+        if temp > max -1 {
+            temp = max -1;
+        }
+
+        self.filesystem.selected_index = temp as usize;
     }
 }
 
@@ -47,7 +56,16 @@ impl Filesystem {
     pub fn go_back(&mut self) {
         self.selected_index = 0;
         self.current_path.pop();
-        let _ = std::env::set_current_dir(&self.current_path);
+        // let _ = std::env::set_current_dir(&self.current_path);
+    }
+
+    pub fn open_go_forward(&mut self) {
+        let item = &self.dirs[self.selected_index];
+
+        if item.file_type.is_dir() {
+            self.selected_index = 0;
+            self.current_path.push(&PathBuf::from(&item.name))
+        }
     }
 
     pub fn update_directories(&mut self) -> io::Result<()> {
@@ -68,6 +86,19 @@ impl Filesystem {
             self.dirs.push(dir);
         }
 
+        self.dirs.sort_by(|a, b| {
+            let a_is_dir = a.file_type.is_dir();
+            let b_is_dir = b.file_type.is_dir();
+            if a_is_dir && !b_is_dir {
+                return std::cmp::Ordering::Less;
+            } else if !a_is_dir && b_is_dir {
+                return std::cmp::Ordering::Greater;
+            }
+
+            a.name.cmp(&b.name)
+        });
+
+        
         Ok(())
     }
 }

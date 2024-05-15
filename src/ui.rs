@@ -33,7 +33,7 @@ pub fn ui(f: &mut Frame, app: &App) {
 
     f.render_widget(dir_path, chunks[2]);
 
-    let tableChunks = Layout::default()
+    let table_chuncks = Layout::default()
         .direction(Direction::Vertical)
         .constraints([
             Constraint::Length(1),
@@ -49,7 +49,7 @@ pub fn ui(f: &mut Frame, app: &App) {
 
     let header_table = Table::new(header_rows, widths);
 
-    f.render_widget(header_table, tableChunks[0]);
+    f.render_widget(header_table, table_chuncks[0]);
 
     let mut table_state = TableState::default();
     table_state.select(Some(app.filesystem.selected_index));
@@ -77,7 +77,7 @@ pub fn ui(f: &mut Frame, app: &App) {
     let table = Table::new(rows, widths)
         .highlight_style(Style::new().add_modifier(Modifier::REVERSED));
 
-    f.render_stateful_widget(table, tableChunks[1], &mut table_state);
+    f.render_stateful_widget(table, table_chuncks[1], &mut table_state);
 
 }
 
