@@ -36,14 +36,11 @@ fn run_app<B: Backend>(
 ) -> io::Result<()> {
 
 // FUNKSJONER:
-// Copy path
 // ny fil
 // slett fil
-// opp/ned
-// enter/backspace
 // Åpne fil
 // Favorites (kanskje)
-
+// Help screen
 
     loop {
         let _ = app.filesystem.update_directories();
@@ -55,27 +52,14 @@ fn run_app<B: Backend>(
             }
             match app.current_screen {
                 CurrentScreen::Main => match key.code {
-                    KeyCode::Char('q') | KeyCode::Esc => {
-                        break;
-                    }
-                    KeyCode::Up => {
-                        app.move_up(1);
-                    }
-                    KeyCode::Down => {
-                        app.move_down(1);
-                    }
-                    KeyCode::Left => {
-                        app.move_up(5);
-                    }
-                    KeyCode::Right => {
-                        app.move_down(5);
-                    }
-                    KeyCode::Backspace => {
-                        app.filesystem.go_back();
-                    }
-                    KeyCode::Enter => {
-                        app.filesystem.open_go_forward();
-                    }
+                    KeyCode::Char('q') | KeyCode::Esc => break,
+                    KeyCode::Up => app.move_up(1),
+                    KeyCode::Down => app.move_down(1),
+                    KeyCode::Left => app.move_up(5),
+                    KeyCode::Right => app.move_down(5),
+                    KeyCode::Backspace => app.filesystem.go_back(),
+                    KeyCode::Enter => app.filesystem.open_go_forward(),
+                    KeyCode::Char('c') => app.copy_path(),
                     _ => {}
                 }
                 _ => {}

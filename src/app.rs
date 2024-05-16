@@ -1,8 +1,11 @@
 use std::{ffi::OsString, fs::{self, FileType}, io, os::unix::fs::MetadataExt, path::PathBuf};
 
+use clipboard::{ClipboardContext, ClipboardProvider};
+
 pub enum CurrentScreen {
     Main,
-    Search
+    Search,
+    Help
 }
 
 pub struct App {
@@ -35,6 +38,13 @@ impl App {
         }
 
         self.filesystem.selected_index = temp as usize;
+    }
+
+    pub fn copy_path(&self) {
+        let path = self.filesystem.current_path.to_string_lossy().to_string();
+
+        let mut ctx: ClipboardContext = ClipboardProvider::new().unwrap();
+        ctx.set_contents(path.to_owned()).unwrap();
     }
 }
 
