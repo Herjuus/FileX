@@ -41,6 +41,8 @@ fn run_app<B: Backend>(
 // Åpne fil
 // Favorites (kanskje)
 // Help screen
+// goto
+// Search
 
     loop {
         let _ = app.filesystem.update_directories();
@@ -60,6 +62,11 @@ fn run_app<B: Backend>(
                     KeyCode::Backspace => app.filesystem.go_back(),
                     KeyCode::Enter => app.filesystem.open_go_forward(),
                     KeyCode::Char('c') => app.copy_path(),
+                    KeyCode::Char('h') => app.set_current_screen(CurrentScreen::Help),
+                    _ => {}
+                }
+                CurrentScreen::Help => match key.code {
+                    KeyCode::Esc => app.set_current_screen(CurrentScreen::Main),
                     _ => {}
                 }
                 _ => {}

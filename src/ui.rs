@@ -2,7 +2,7 @@ use std::fs::FileType;
 
 use ratatui::{layout::{Alignment, Constraint, Direction, Layout, Margin, Rect}, style::{Color, Style, Stylize}, text::Text, widgets::{Block, Borders, Paragraph}, Frame};
 
-use crate::app::App;
+use crate::app::{App, CurrentScreen};
 
 use ratatui::{prelude::*, widgets::*};
 
@@ -78,6 +78,14 @@ pub fn ui(f: &mut Frame, app: &App) {
         .highlight_style(Style::new().add_modifier(Modifier::REVERSED));
 
     f.render_stateful_widget(table, table_chuncks[1], &mut table_state);
+
+    if let CurrentScreen::Help = app.current_screen {
+        let popup = Block::default()
+            .style(Style::default().bg(Color::DarkGray));
+
+        let area = centered_rect(60, 25, f.size());
+        f.render_widget(popup, area);
+    }
 
 }
 

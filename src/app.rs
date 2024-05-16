@@ -21,6 +21,10 @@ impl App {
         }
     }
 
+    pub fn set_current_screen(&mut self, screen: CurrentScreen) {
+        self.current_screen = screen;
+    }
+
     pub fn move_up(&mut self, steps: i64) {
         let mut temp = self.filesystem.selected_index as i64 - steps;
         if temp < 0 {
@@ -108,7 +112,6 @@ impl Filesystem {
             a.name.cmp(&b.name)
         });
 
-        
         Ok(())
     }
 }
