@@ -54,20 +54,24 @@ fn run_app<B: Backend>(
             }
             match app.current_screen {
                 CurrentScreen::Main => match key.code {
-                    KeyCode::Char('q') | KeyCode::Esc => break,
+                    KeyCode::Char('q') => break,
                     KeyCode::Up => app.move_up(1),
                     KeyCode::Down => app.move_down(1),
                     KeyCode::Left => app.move_up(5),
                     KeyCode::Right => app.move_down(5),
-                    KeyCode::Backspace => app.filesystem.go_back(),
+                    KeyCode::Backspace | KeyCode::Esc => app.filesystem.go_back(),
                     KeyCode::Enter => app.filesystem.open_go_forward(),
                     KeyCode::Char('c') => app.copy_path(),
                     KeyCode::Char('h') => app.set_current_screen(CurrentScreen::Help),
                     _ => {}
                 }
                 CurrentScreen::Help => match key.code {
-                    KeyCode::Esc => app.set_current_screen(CurrentScreen::Main),
+                    KeyCode::Esc | KeyCode::Backspace => app.set_current_screen(CurrentScreen::Main),
+                    KeyCode::Char('q') => break,
                     _ => {}
+                }
+                CurrentScreen::Error => match key.code {
+                    _ => app.set_current_screen(CurrentScreen::Main),
                 }
                 _ => {}
             }
